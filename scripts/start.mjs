@@ -206,8 +206,16 @@ function startPaperclip() {
       console.log(`\n⚠️ Bootstrap invite skipped: admin already exists.\n`);
     }
 
-    // Detect ready
-    if (!paperclipReady && (text.includes("Server listening on") || text.includes("server listening"))) {
+    // Detect ready — newer Paperclip logs "Server listener bound" /
+    // "startup recovery complete" instead of (or in addition to) the older
+    // "Server listening on" string. Match stripped ANSI text.
+    const readyHints = [
+      "Server listening on",
+      "server listening",
+      "Server listener bound",
+      "Server startup recovery complete",
+    ];
+    if (!paperclipReady && readyHints.some((h) => clean.includes(h))) {
       paperclipReady = true;
       console.log(`\n✅ Paperclip ready — proxying :${PUBLIC_PORT} → :${PAPERCLIP_PORT}\n`);
 
