@@ -28,6 +28,14 @@ const geminiLocalAdapter = {
     assert.equal(second.changed, false);
   });
 
+  it("fails before the patch: published execute.js has no public-origin JWT inject", () => {
+    const source = readFileSync(new URL("./fixtures/execute.published.js", import.meta.url), "utf8");
+    assert.equal(source.includes("function resolveRemotePaperclipApiUrl"), false);
+    assert.equal(source.includes("env.PAPERCLIP_TOKEN = authToken"), false);
+    assert.match(source, /if \(authToken\) \{\s*env\.PAPERCLIP_API_KEY = authToken;/);
+    assert.match(source, /function sessionMatches\(session, envType, envName, repos\)/);
+  });
+
   it("injects a public origin JWT into the published execute.js shape", () => {
     const source = readFileSync(new URL("./fixtures/execute.published.js", import.meta.url), "utf8");
     const first = patchExecuteSource(source);
