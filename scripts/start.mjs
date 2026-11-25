@@ -179,6 +179,15 @@ function startPaperclip() {
         PORT: String(PAPERCLIP_PORT),
         HOST: "127.0.0.1",
         NODE_ENV: process.env.NODE_ENV || "production",
+        // Cursor Cloud workers cannot reach 127.0.0.1:3099. Point the Paperclip
+        // API at the public origin so minted run JWTs can PATCH cards.
+        ...(process.env.PAPERCLIP_PUBLIC_URL || process.env.PAPERCLIP_API_URL
+          ? {
+              PAPERCLIP_API_URL: (
+                process.env.PAPERCLIP_API_URL || process.env.PAPERCLIP_PUBLIC_URL
+              ).replace(/\/+$/, ""),
+            }
+          : {}),
       },
     }
   );

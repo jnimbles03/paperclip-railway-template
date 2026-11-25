@@ -5,6 +5,8 @@
   "private": true,
   "scripts": {
     "start": "node scripts/start.mjs",
+    "postinstall": "node scripts/patch-cursor-cloud-jwt.mjs",
+    "test": "node --test scripts/patch-cursor-cloud-jwt.test.mjs",
     "build": "echo 'No build step required'"
   },
   "dependencies": {
