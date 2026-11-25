@@ -3,6 +3,16 @@ import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import { patchExecuteSource, patchRegistrySource } from "./patch-cursor-cloud-jwt.mjs";
 
+describe("Dockerfile postinstall layout", () => {
+  it("copies scripts before npm install so postinstall can patch", () => {
+    const dockerfile = readFileSync(new URL("../Dockerfile", import.meta.url), "utf8");
+    const scriptsCopy = dockerfile.indexOf("COPY scripts");
+    const npmInstall = dockerfile.indexOf("RUN npm install");
+    assert.ok(scriptsCopy >= 0, "Dockerfile must COPY scripts");
+    assert.ok(npmInstall > scriptsCopy, "COPY scripts must run before npm install");
+  });
+});
+
 describe("cursor_cloud JWT install patch", () => {
   it("flips only the cursor_cloud JWT flag", () => {
     const source = `const cursorLocalAdapter = {
