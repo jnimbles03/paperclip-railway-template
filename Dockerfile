@@ -16,8 +16,11 @@ RUN mkdir -p /paperclip && chown -R paperclip:paperclip /paperclip
 
 WORKDIR /app
 
-# Copy package files and install dependencies
+# Copy package files and the postinstall patch before npm install.
+# postinstall runs `node scripts/patch-cursor-cloud-jwt.mjs`; copying only
+# package.json first made production builds fail with MODULE_NOT_FOUND.
 COPY package.json ./
+COPY scripts ./scripts
 RUN npm install --omit=dev
 
 # Copy application code
